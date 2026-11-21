@@ -145,10 +145,9 @@ python3 scripts/website.py check
 This checks shared HTML and translation sources without rewriting them, prepares
 all language editions and generated assets, and
 checks page links, copied-text targets, repository documentation links, SEO
-metadata and the publishing configuration. It also runs the maintenance
-regressions. A stale shared region fails with the command needed to fix it.
-PR checks and the manual publisher run this same command. The checks work
-offline after the Python dependencies are installed.
+metadata. It also runs the maintenance regressions. A stale shared region
+fails with the command needed to fix it. The checks work offline after the
+Python dependencies are installed.
 
 For an optional external-link audit, with GitHub CLI available:
 
@@ -622,68 +621,6 @@ Local Wrangler commands above publish only the separate preview Worker.
 
 ## Synchronized production publishing
 
-`.github/workflows/website-pages.yml` prepares `website/_site` once and deploys
-the same artifact to Cloudflare (`rea.tools`) and GitHub Pages. It is the sole
-production publisher, manually triggered and restricted to `main`;
-ordinary pushes and pull requests do not publish the site.
-
-Configure these repository **Actions secrets** before publishing:
-
-- `CLOUDFLARE_API_TOKEN`: a Cloudflare token using the **Edit Cloudflare Workers**
-  template, scoped to the website's account and zone.
-- `CLOUDFLARE_ACCOUNT_ID`: that Cloudflare account's ID.
-
-See Cloudflare's [GitHub Actions authentication instructions](https://developers.cloudflare.com/workers/ci-cd/external-cicd/github-actions/).
-The default `both` target checks that both secrets are present before preparing
-a release. Cloudflare deploys first; GitHub Pages deploys after that step succeeds.
-
-Preparation adds `deployment.json` with the workflow's commit SHA. Cloudflare
-receives the extracted Pages artifact through Wrangler's explicit assets path;
-the production environment disables Wrangler's preview custom build, so deployment
-uses the prepared artifact directly. The workflow then
-checks the selected public version markers and reports success only when they
-match that commit. A failed publication remains failed; fix its cause and rerun the
-workflow to complete both deployments. The two hosts can update at different
-times while a run is in progress.
-
-Website checks run only for pull requests that change `website/`, the website
-scripts or workflow definitions. They check local links, HTML fragments, SVG XML,
-search/sharing metadata and the single Pages publisher without installing npm
-dependencies. The same asset preparation and verification run before each manual
-deployment. With the preview environment active, run them locally:
-
-```sh
-python3 scripts/website.py check
-```
-
-`.github/workflows/pages.yml` is a separate, manual-only VitePress build. It
-has no Pages artifact upload, deployment job or deployment permissions. This
-prevents documentation updates from replacing the public website. The legacy
-publishing job has been removed, so enabling this build workflow cannot publish
-the old site.
-
-After the site is approved and merged, select **GitHub Actions** under the
-repository's **Settings → Pages → Build and deployment**. Then run **Publish REA
-website** from the Actions tab on `main`. This publishes both production hosts.
-The workflow uses the `github-pages` environment, the official Pages actions and
-Cloudflare's Wrangler action.
-
-The equivalent CLI command publishes both hosts:
-
-```sh
-gh workflow run website-pages.yml --repo morluto/rea --ref main
-```
-
-While Cloudflare credentials are being configured, an explicitly requested
-Pages-only publication uses the same workflow with `target=pages`:
-
-```sh
-gh workflow run website-pages.yml --repo morluto/rea --ref main -f target=pages
-```
-
-This mode verifies the Pages commit marker. The default remains `both` for
-synchronized production releases.
-
-Local development does not change Pages settings or run the deployment workflow.
-Any environment protection rules are configured separately when publication is
-approved.
+The repository no longer defines a GitHub Actions publisher for `rea.tools`
+or GitHub Pages. Local preview and verification are available through
+[the website commands above](#local-preview).

@@ -218,16 +218,5 @@ tests. Directory-based selection includes new SQLite service and boundary
 tests automatically. `npm run test:sqlite:run` runs the same cases when the
 compiled runtime and generated test artifacts are already current.
 
-The reusable SQLite CI workflow consumes the shared build artifact and tests
-Node 22.x unavailable-runtime diagnostics, the repository-pinned 24.x release,
-and the latest 24.x and 26.x releases; `.github/workflows/sqlite-runtime.yml`
-owns the exact versions. The repository-pinned runtime also runs the full
-suite. CI's required gate waits for every selected
-SQLite matrix job; a failed, cancelled, skipped or missing selected lane blocks
-the gate. Workflow changes themselves select the build and compatibility lane.
-
-PR checks run against GitHub's merge with the current base branch. A later
-change to `main` can introduce failures outside SQLite; inspect the failing
-job and recheck the updated merge before treating an earlier green run as
-current verification. Compatibility checks detect regressions, but cannot
-guarantee that an arbitrary future upstream change remains compatible.
+Record the Node.js versions used for local compatibility checks. The focused
+suite verifies the runtime used for that invocation.

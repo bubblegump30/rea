@@ -336,10 +336,8 @@ for live editing and `npm run docs:preview` to serve an existing build at
 to build and verify the rendered routes and anchors.
 
 The [authoring guide](docs/development/documentation.md#links-and-public-routes)
-explains where to edit navigation and how to preserve public links. The
-`Documentation` CI job runs the documentation and rendered-route checks.
-The manual VitePress workflow in `.github/workflows/pages.yml` builds these
-guides for verification.
+explains where to edit navigation and how to preserve public links. Run
+`npm run verify:docs:routes` to build the guides and verify the rendered routes.
 
 The product website in `website/public/` has a separate
 [publishing workflow](website/README.md#synchronized-production-publishing) for
